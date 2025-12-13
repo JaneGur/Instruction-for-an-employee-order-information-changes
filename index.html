@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструкция по настройке учета апгрейдов и страницы отчетов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: #1e293b;
+            background: linear-gradient(to bottom, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, #fef5f8 0%, #fce7f0 50%, #fad8e7 100%);
+            color: #7a4a5a;
+            padding: 60px 40px;
+            margin-bottom: 50px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(220, 180, 195, 0.15);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #fce7f0;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(230, 200, 215, 0.1), transparent 50%),
+                        radial-gradient(circle at bottom left, rgba(220, 180, 195, 0.1), transparent 50%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .navigation {
+            background: linear-gradient(135deg, #fef5f8 0%, #fce7f0 100%);
+            padding: 30px 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(220, 180, 195, 0.15);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            border: 2px solid #fce7f0;
+            width: 320px;
+            flex-shrink: 0;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .nav-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #7a4a5a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-title::before {
+            content: '📋';
+            font-size: 1.1em;
+        }
+
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #fefafc 0%, #fef5f8 100%);
+            border-radius: 12px;
+            text-decoration: none;
+            color: #8b5566;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            font-size: 0.95em;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #e8b4c4, #d89aaf);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(135deg, #fce7f0 0%, #fad8e7 100%);
+            border-color: #f5d5e3;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(220, 180, 195, 0.2);
+        }
+
+        .nav-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .content-section {
+            background: white;
+            margin-bottom: 35px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #fef5f8 0%, #fce7f0 100%);
+            color: #8b5566;
+            padding: 25px 35px;
+            font-size: 1.5em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid #f5d5e3;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            right: -50px;
+            top: -50px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(230, 200, 215, 0.1), transparent);
+            pointer-events: none;
+        }
+
+        .section-content {
+            padding: 35px;
+            font-size: 1.05em;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #e8b4c4, #d89aaf);
+            color: white;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1.2em;
+            box-shadow: 0 4px 12px rgba(220, 180, 195, 0.3);
+        }
+
+        .warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #fbbf24;
+            border-radius: 14px;
+            padding: 20px 25px;
+            margin: 25px 0;
+            border-left: 6px solid #f59e0b;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+        }
+
+        .warning-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-title::before {
+            content: '⚠️';
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 2px solid #60a5fa;
+            border-radius: 14px;
+            padding: 20px 25px;
+            margin: 25px 0;
+            border-left: 6px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .code-block {
+            position: relative;
+            margin: 25px 0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            border: 1px solid #1e293b;
+        }
+
+        .code-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            border-bottom: 1px solid #475569;
+        }
+
+        .code-language {
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            color: #94a3b8;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .copy-btn::before {
+            content: "📋";
+        }
+
+        .copy-btn.copied::before {
+            content: "✅";
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 24px;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 0.92em;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 25px;
+            padding-left: 60px;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e8b4c4, #d89aaf);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(220, 180, 195, 0.25);
+        }
+
+        .file-structure {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 25px;
+            margin: 25px 0;
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .file-structure .folder {
+            color: #3b82f6;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .file-structure .file {
+            color: #64748b;
+            margin-left: 20px;
+            padding: 4px 0;
+        }
+
+        .parameter {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+            font-size: 0.95em;
+        }
+
+        .arrow-step {
+            text-align: center;
+            font-size: 2em;
+            color: #d89aaf;
+            margin: 30px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: #64748b;
+            border-top: 2px solid #e2e8f0;
+            margin-top: 60px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        footer p:first-child {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #e8b4c4, #d89aaf);
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(220, 180, 195, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 32px rgba(220, 180, 195, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+                flex-direction: column;
+            }
+
+            .navigation {
+                width: 100%;
+                position: relative;
+                top: 0;
+                max-height: none;
+                margin-bottom: 30px;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+            }
+            
+            header {
+                padding: 40px 25px;
+            }
+
+            .section-content {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navigation">
+            <div class="nav-title">Оглавление</div>
+            <div class="nav-list">
+                <a href="#step1" class="nav-item">Шаг 1. Создание поля заказа</a>
+                <a href="#step2" class="nav-item">Шаг 2. Структура проекта</a>
+                <a href="#step3" class="nav-item">Шаг 3. Файл changeDealInformation.tsx</a>
+                <a href="#step4" class="nav-item">Шаг 4. Файл table.tsx</a>
+                <a href="#step5" class="nav-item">Шаг 5. Файл page.tsx</a>
+                <a href="#step6" class="nav-item">Шаг 6. Настройка воронки</a>
+                <a href="#step7" class="nav-item">Шаг 7. Ограничение редактирования</a>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>📘 Инструкция по настройке учета апгрейда заказов и страницы отчета</h1>
+                </div>
+            </header>
+
+            <main>
+            <section id="step1" class="content-section">
+                <div class="section-header">
+                    <span class="step-number">1</span>Создание дополнительного поля заказа
+                </div>
+                <div class="section-content">
+                    <p>В GetCourse перейдите в <span class="highlight">Настройки → Дополнительные поля → Заказы</span>.</p>
+                    
+                    <p>Создайте поле:</p>
+                    <ul style="margin: 20px 0; margin-left: 20px;">
+                        <li><strong>Название:</strong> Разница между суммой клиента и финальным платежом</li>
+                        <li><strong>Тип:</strong> Число</li>
+                    </ul>
+                    
+                    <p>Сохраните поле.</p>
+                </div>
+            </section>
+
+            <section id="step2" class="content-section">
+                <div class="section-header">
+                    <span class="step-number">2</span>Подготовка структуры проекта в IDE
+                </div>
+                <div class="section-content">
+                    <p>В IDE создайте папку:</p>
+                    
+                    <div class="file-structure">
+                        <div class="folder">changeDealInformation</div>
+                        <div class="file">├── changeDealInformation.tsx</div>
+                        <div class="file">├── page.tsx</div>
+                        <div class="file">└── table.tsx</div>
+                    </div>
+                    
+                    <p>Внутри папки создайте 3 файла:</p>
+                    <ul style="margin: 20px 0; margin-left: 20px;">
+                        <li>changeDealInformation.tsx</li>
+                        <li>page.tsx</li>
+                        <li>table.tsx</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="step3" class="content-section">
+                <div class="section-header">
+                    <span class="step-number">3</span>Файл changeDealInformation.tsx
+                </div>
+                <div class="section-content">
+                    <div class="info-box">
+                        <strong>📌 Назначение:</strong> создание / обновление / удаление записи сделки и расчет апгрейда.
+                    </div>
+                    
+                    <p>Откройте файл changeDealInformation.tsx.</p>
+                    <p>Полностью вставьте код:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-language">TypeScript</span>
+                            <button class="copy-btn" onclick="copyCode(this, 'code1')">Копировать</button>
+                        </div>
+                        <pre id="code1"><code>import { HookParams } from '@templates/sdk'
+import { getDealInfo } from '@getcourse/sdk'
+import { Deals } from './table'
+
+app.accountHook('@builder/hook-node-actions/ВАШ_ID_ДЕЙСТВИЯ', async (ctx, p: any) => {
+  const params = p as HookParams<undefined>
+  const dealID = params.agentsByType.deal.externalId
+  const dealInfo = await getDealInfo(ctx, dealID)
+
+  const existingDeal = await Deals.findOneBy(ctx, {
+    id_deal: dealInfo.id,
+  })
+
+  if (!existingDeal) {
+    // ➕ СОЗДАНИЕ
+    await Deals.create(ctx, {
+      id_deal: dealInfo.id,
+      id_user: dealInfo.user_id,
+      cost_deal: dealInfo.cost ?? null,
+      manager_user_id: dealInfo.manager_user_id ?? null,
+    })
+  } else {
+    // Вычисляем апгрейд
+    const upgrade =
+      dealInfo.user_payed_money_value && existingDeal.cost_deal
+        ? dealInfo.user_payed_money_value - existingDeal.cost_deal
+        : null
+
+    // 🔄 ОБНОВЛЕНИЕ или УДАЛЕНИЕ
+    if (!dealInfo.manager_user_id || upgrade === 0 || (upgrade !== null && upgrade < 15000)) {
+      await Deals.delete(ctx, existingDeal.id)
+    } else {
+      await Deals.update(ctx, {
+        id: existingDeal.id,
+        finished_at_deal: dealInfo.finished_at
+          ? new Date(dealInfo.finished_at)
+          : null,
+        manager_user_id: dealInfo.manager_user_id,
+        user_payed_money_value: dealInfo.user_payed_money_value ?? null,
+        upgrade,
+      })
+    }
+  }
+
+  return {
+    success: true,
+    data: String(dealInfo.cost),
+  }
+})</code></pre>
+                    </div>
+                    
+                    <div class="warning">
+                        <div class="warning-title">Важно:</div>
+                        <p>замените <span class="parameter">ВАШ_ID_ДЕЙСТВИЯ</span> на идентификатор пользовательского кода из воронки.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="step4" class="content-section">
+                <div class="section-header">
+                    <span class="step-number">4</span>Файл table.tsx
+                </div>
+                <div class="section-content">
+                    <div class="info-box">
+                        <strong>📌 Назначение:</strong> таблица для хранения сделок с апгрейдом.
+                    </div>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-language">TypeScript</span>
+                            <button class="copy-btn" onclick="copyCode(this, 'code2')">Копировать</button>
+                        </div>
+                        <pre id="code2"><code>import { Heap } from '@app/heap'
+
+export const Deals = Heap.Table('dealsforupgrade', {
+  id_deal: Heap.Number(),
+  id_user: Heap.Number(),
+  finished_at_deal: Heap.Optional(Heap.DateTime()),
+  cost_deal: Heap.Optional(Heap.Number()),
+  manager_user_id: Heap.Optional(Heap.Number()),
+  user_payed_money_value: Heap.Optional(Heap.Number()),
+  upgrade: Heap.Optional(Heap.Number()),
+})</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="step5" class="content-section">
+                <div class="section-header">
+                    <span class="step-number">5</span>Файл page.tsx
+                </div>
+                <div class="section-content">
+                    <div class="info-box">
+                        <strong>📌 Назначение:</strong> HTML‑страница со статистикой и фильтрами по апгрейдам.
+                    </div>
+                    
+                    <p>Вставьте код из инструкции без изменений логики.</p>
+                    <p>Проверьте список менеджеров:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-language">TypeScript</span>
+                            <button class="copy-btn" onclick="copyCode(this, 'code3')">Копировать</button>
+                        </div>
+                        <pre id="code3"><code>const managerNames: Record<number, string> = {
+  287115534: 'Анжела Романова',
+  287115542: 'Эльмира Сарова',
+  287115546: 'Лилия Новикова',
+}</code></pre>
+                    </div>
+                    
+                    <p>➡️ При необходимости добавьте или замените ID менеджеров.</p>
+                </div>
+            </section>
+
+            <section id="step6" class="content-section">
+                <div class="section-header">
+                    <span class="step-number">6</span>Настройка воронки
+                </div>
+                <div class="section-content">
+                    <h3 style="margin-bottom: 20px; color: #0f172a; font-weight: 700;">6.1 Создание воронки</h3>
+                    <p>Перейдите в <span class="highlight">Воронки → Создать новую</span>.</p>
+                    
+                    <div class="arrow-step">⬇️</div>
+                    
+                    <h3 style="margin-bottom: 20px; color: #0f172a; font-weight: 700;">6.2 Блок «Заказ создан (все предложения)»</h3>
+                    <p>Тип блока: <span class="parameter">Пользовательский код</span></p>
+                    
+                    <ol class="step-list">
+                        <li>Скопируйте идентификатор действия.</li>
+                        <li>Вставьте его в файл changeDealInformation.tsx.</li>
+                        <li>Установите: <span class="parameter">Сохранить результат в переменную: deal.startCost</span></li>
+                    </ol>
+                    
+                    <div class="arrow-step">⬇️</div>
+                    
+                    <h3 style="margin-bottom: 20px; color: #0f172a; font-weight: 700;">6.3 Блок «Заказ оплачен (все предложения)»</h3>
+                    <p>Тип блока: <span class="parameter">Пользовательский код</span></p>
+                    
+                    <ol class="step-list">
+                        <li>Используйте тот же идентификатор действия.</li>
+                        <li>Укажите: <span class="parameter">Сохранить результат в переменную: deal.finishCost</span></li>
+                    </ol>
+                    
+                    <div class="arrow-step">⬇️</div>
+                    
+                    <h3 style="margin-bottom: 20px; color: #0f172a; font-weight: 700;">6.4 Условие между блоками</h3>
+                    <p>В стрелке между блоками:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-language">JavaScript</span>
+                            <button class="copy-btn" onclick="copyCode(this, 'code4')">Копировать</button>
+                        </div>
+                        <pre id="code4"><code>Number(deal.finishCost) - Number(deal.startCost) >= 15000</code></pre>
+                    </div>
+                    
+                    <div class="arrow-step">⬇️</div>
+                    
+                    <h3 style="margin-bottom: 20px; color: #0f172a; font-weight: 700;">6.5 Блок «Обновить заказ»</h3>
+                    <ol class="step-list">
+                        <li>Поставьте галочку <span class="parameter">Обновить доп. поле заказа</span>.</li>
+                        <li>Выберите поле: <span class="parameter">Разница между суммой клиента и финальным платежом</span></li>
+                        <li>Значение:</li>
+                    </ol>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-language">JavaScript</span>
+                            <button class="copy-btn" onclick="copyCode(this, 'code5')">Копировать</button>
+                        </div>
+                        <pre id="code5"><code>Number(deal.finishCost) - Number(deal.startCost)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="step7" class="content-section">
+                <div class="section-header">
+                    <span class="step-number">7</span>Ограничение редактирования полей (Body аккаунта)
+                </div>
+                <div class="section-content">
+                    <p>Перейдите в <span class="highlight">Настройки аккаунта → Body</span>.</p>
+                    <p>Вставьте код блокировки.</p>
+                    <p>Укажите разрешенных пользователей:</p>
+                    
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-language">JavaScript</span>
+                            <button class="copy-btn" onclick="copyCode(this, 'code6')">Копировать</button>
+                        </div>
+                        <pre id="code6"><code>const allowedUserIds = [280938485]</code></pre>
+                    </div>
+                    
+                    <p>➡️ Замените ID на свои.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>🎉 Инструкция завершена! Теперь у вас есть полностью настроенная система учета апгрейдов.</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Если у вас возникли вопросы, обратитесь к документации GetCourse или технической поддержке.</p>
+        </footer>
+    </div>
+
+    <a href="#" class="back-to-top" onclick="
